@@ -30,17 +30,17 @@ void processCmd(char **token)
 
 int main()
 {
-    char **token;
+    char **tokens;
 
     initCmdLine();
     while (1)
     {
-        token = getCmdLine();
-        if (strcmp(token[0], "exit") == 0)
+        tokens = getCmdLine();
+        if (strcmp(tokens[0], "exit") == 0)
             break;
-        processCmd(token);
+        processCmd(tokens);
     }
-    free(token);
+    free(tokens);
     freeCmdLine();
     return 0;
 }
