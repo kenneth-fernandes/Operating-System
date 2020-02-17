@@ -13,8 +13,10 @@ int status;
 void processCmd(char **token)
 {
 
+    
     if ((pid = fork()) == 0)
     {
+        //Child process
         status = 0;
 
         if (execvp(token[0], token) == -1)
@@ -25,6 +27,7 @@ void processCmd(char **token)
     }
     else
     {
+        //Parent process
         waitpid(pid, &status, 0);
         
     }
