@@ -20,21 +20,24 @@ void processCmd(char **token)
         if (execvp(token[0], token) == -1)
         {
             fprintf(stderr, "Failure while performing exec.\n");
+            exit(EXIT_FAILURE);
         }
     }
     else
     {
         waitpid(pid, &status, 0);
+        
     }
 }
 
 int main()
 {
     char **tokens;
-
+    
     initCmdLine();
     while (1)
     {
+        printf("mysh>");
         tokens = getCmdLine();
         if (strcmp(tokens[0], "exit") == 0)
             break;
