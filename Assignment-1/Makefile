@@ -4,5 +4,5 @@ run : mysh
 build : mysh_program.c cmdLine.c
 	gcc mysh_program.c cmdLine.c -o mysh
 	
-clean : 
+clean : mysh
 	-rm mysh
