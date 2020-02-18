@@ -58,8 +58,6 @@ int main()
         processCmd(tokens);
     }
 
-    
-
     // Invoking the function to free up memory
     freeCmdLine();
     return 0;
