@@ -57,8 +57,8 @@ void processCmdLine(char **tokens)
             outputFileDescriptor = open(tokens[index1 + 1], O_CREAT | O_TRUNC | O_WRONLY);
 
             // Replacing the standard input/output with input/output file descriptor
-            dup2(inputFileDescriptor, 0);
-            dup2(outputFileDescriptor, 1);
+            dup2(inputFileDescriptor, STDIN_FILENO);
+            dup2(outputFileDescriptor, STDOUT_FILENO);
 
             // Closing the unused input / output file descriptor
             close(inputFileDescriptor);
@@ -74,7 +74,7 @@ void processCmdLine(char **tokens)
             outputFileDescriptor = open(tokens[index + 1], O_CREAT | O_TRUNC | O_WRONLY);
 
             // Replacing the standard output with output file descriptor
-            dup2(outputFileDescriptor, 1);
+            dup2(outputFileDescriptor, STDOUT_FILENO);
 
             // Closing the unused output file descriptor
             close(outputFileDescriptor);
@@ -89,7 +89,7 @@ void processCmdLine(char **tokens)
             inputFileDescriptor = open(tokens[index + 1], O_RDONLY);
 
             // Replacing the standard input with input file descriptor
-            dup2(inputFileDescriptor, 0);
+            dup2(inputFileDescriptor, STDIN_FILENO);
 
             // Closing the unused input file descriptor
             close(inputFileDescriptor);
@@ -101,9 +101,15 @@ void processCmdLine(char **tokens)
             exit(EXIT_FAILURE);
         }
     }
-    else
+    else if (pid > 0)
     { //Parent process block
         waitpid(pid, &status, 0);
+    }
+    else
+    {
+        //fork() Error block
+        fprintf(stderr, "Failure while performing fork().\n");
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -118,7 +124,7 @@ int main()
     initCmdLine();
     while (1)
     {
-        printf("mysh > ");
+        printf("\nmysh > ");
 
         // Retrieving the command in terms of separate tokens
         tokens = getCmdLine();
