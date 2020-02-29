@@ -17,9 +17,11 @@ void initCmdLine()
 
 char **getCmdLine()
 {
+
 	// getline will reallocate cmdbuf to be large enough to fit the next line from stdin
 	if (getline(&cmdbuf, &cmdbufsize, stdin) < 0)
 	{
+
 		if (feof(stdin))
 		{
 			tokens[0] = "exit";
@@ -46,6 +48,7 @@ char **getCmdLine()
 		}
 	}
 	tokens[n] = NULL;
+
 	return tokens;
 }
 

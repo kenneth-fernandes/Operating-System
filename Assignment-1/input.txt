@@ -1,1 +1,2 @@
-this is input text 123.
+ This is text inside input.txt
+  It may go on for several lines
