@@ -12,7 +12,9 @@
 - Currently, I am looking at various online resources that would help me understand kernel programming.
 
 - I have added two files (Note: Partial code has been written):
+    
     > user_ps.c - For creating dev/process_list character device that returns the information for all currently running processes.
+
     > user.c - For opening the character device and printing the list of processes retrieved from the character device.
 
 - Most of the time would be spent in understanding basic kernel programming, after which I would be able to move ahead with the feature implementation.
