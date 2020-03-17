@@ -13,7 +13,7 @@
 
 - I have added two files (Note: Partial code has been written):
     
-    > user_ps.c - For creating dev/process_list character device that returns the information for all currently running processes.
+    > dev_ps.c - For creating dev/process_list character device that returns the information for all currently running processes.
 
     > user.c - For opening the character device and printing the list of processes retrieved from the character device.
 
