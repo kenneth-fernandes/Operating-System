@@ -20,12 +20,19 @@ modules_install:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules_install
 
 clean:
-	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions Module.symvers modules.order
+	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions Module.symvers modules.order program
 
 .PHONY: modules modules_install clean
 
 else
 	# called from kernel build system: just declare what our modules are
 	#obj-m := hello.o hellon.o 
-	obj-m := dev_ps_1.o
+	obj-m := dev_ps.o
 endif
+
+run : program
+	./program
+	
+build : user.c
+	gcc user.c -o program
+

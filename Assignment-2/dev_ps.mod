@@ -1,2 +1,2 @@
-/home/kenny/Documents/Masters-CS/Spring-2020/OS/Assignments/Operating-System/Assignment-2/dev_ps.o
+/home/kenny/Documents/OS/Operating-System/Assignment-2/dev_ps.o
 
