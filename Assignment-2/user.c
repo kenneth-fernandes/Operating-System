@@ -7,41 +7,41 @@
 
 #define BUFFER_LENGTH 256
 #define PROCESS_ARR_LENGTH 256
-static char receive[BUFFER_LENGTH];
+char *outputString;
 
 int main()
 {
-    int ret, fileDescriptor;
-    
-    printf("Starting device test code example...\n");
-    
+    int readingFileStatus = 1, fileDescriptor, processCount = 1;
+
+    printf("\nUser Program: Starting the user program to test the device.\n");
+
     fileDescriptor = open("/dev/process_lst", O_RDWR);
-    printf("1111Starting device test code example...\n");
+
     if (fileDescriptor < 0)
     {
-        perror("Failed to open the device!!");
+        perror("\nUser Program: Failed to open the device.\n");
         return errno;
     }
 
-    printf("Reading from the device...\n");
-    for (int i = 0; i <= PROCESS_ARR_LENGTH; i += 1)
+    printf("\nUser Program: Reading from the device.\n");
+    printf("\n===============================================================================================================\n");
+    while (readingFileStatus != 0)
     {
-
-        ret = read(fileDescriptor, receive, BUFFER_LENGTH);
-        if (ret < 0)
+        outputString = malloc(sizeof(char *) * BUFFER_LENGTH);
+        readingFileStatus = read(fileDescriptor, outputString, (sizeof(char *) * BUFFER_LENGTH));
+        if (readingFileStatus < 0)
         {
-            perror("Failed to read the message from the device.");
-            close(fileDescriptor);
+            perror("\nUser Program: Failed to read the message from the device.");
             return errno;
         }
-        if (strcmp(receive, "exit") == 0)
-        {
-            break;
-        }
-        printf("%s", receive);
+        if (readingFileStatus != 0)
+            printf("\nUser Program: %s", outputString);
+        free(outputString);
     }
+    printf("\n===============================================================================================================\n");
+
     close(fileDescriptor);
 
-    printf("End of the program\n");
+    printf("\nUser Program: End of the program\n");
     return 0;
 }
