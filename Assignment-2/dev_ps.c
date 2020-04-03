@@ -54,8 +54,7 @@ static struct miscdevice process_lst_device = {
 /* Function implementation for open() function of character device */
 static int device_open(struct inode *inodep, struct file *filep)
 {
-    // Allocating memory for storing the process details
-    result_buffer = kmalloc(sizeof(char *) * BUFFER_SIZE, GFP_KERNEL);
+    
     printk(KERN_INFO "\nProcess_Lst_Device: %s", "Device has been opened.");
 
     // Storing the process after the init_task process mentioned into a temporay storage
@@ -77,14 +76,19 @@ static ssize_t device_read(struct file *file, char *user_space_buffer, size_t le
         // Checking if the current process is pointing to the correct process stored tempProcess using next_task()
         if (process == temp_process)
         {
-            // Intializng the buffer to 0 and writing the process details to the buffer
-            memset(result_buffer, 0, sizeof(char *) * BUFFER_SIZE);
+            // Allocating memory for storing the process details
+            result_buffer = kmalloc(sizeof(char *) * BUFFER_SIZE, GFP_KERNEL);
+            if (!result_buffer)
+            {
+              printk(KERN_INFO "\nProcess_Lst_Device:  %s", "Error in allocating memory to buffer");
+              return -1;
+            }
             sprintf(result_buffer, "PROCESS = %s | PID = %d | PPID = %d | CPU = %d | STATE = %s",
                     process->comm, process->pid, process->real_parent->pid, task_cpu(process), getProcessStatus(process->state));
             printk(KERN_INFO "\nProcess_Lst_Device:  %s - %s", "Process read", result_buffer);
 
             // Verifying whether the user space pointer is valid
-            if (access_ok(VERIFY_WRITE, user_space_buffer, strlen(user_space_buffer)))
+            if (access_ok(VERIFY_WRITE, user_space_buffer, length))
             {
                 // If user space pointer is valid, then perfoming the copy_to_user
                 cpy_to_usr_status = copy_to_user(user_space_buffer, result_buffer, strlen(result_buffer));
@@ -102,6 +106,8 @@ static ssize_t device_read(struct file *file, char *user_space_buffer, size_t le
             result_buffr_content_len = strlen(result_buffer);
             // Storing the next process into a temporay storage
             temp_process = next_task(process);
+            // De-allocatin the memory
+            kfree(result_buffer);
             break;
         }
     }
@@ -116,8 +122,7 @@ static int device_close(struct inode *inodep, struct file *filep)
     // Storing the init_task process pointer into the temporay storage
     temp_process = &init_task;
 
-    // De-allocatin the memory
-    kfree(result_buffer);
+    
     return 0;
 }
 
