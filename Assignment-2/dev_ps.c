@@ -13,94 +13,126 @@
 #include <linux/slab.h>
 #include <linux/string.h>
 
-MODULE_LICENSE("GPL");                                                        ///< The license type -- this affects available functionality
-MODULE_AUTHOR("Kenneth Fernandes");                                           ///< The author -- visible when you use modinfo
-MODULE_DESCRIPTION("Character device for listing current active processes."); ///< The description -- see modinfo
-MODULE_VERSION("1.0");                                                        ///< A version number to inform users
+/* Module information register */
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Kenneth Fernandes");
+MODULE_DESCRIPTION("Character device for listing current active processes.");
+MODULE_VERSION("1.0");
 
-/* Definition of the structure task_struct FOR for processes/tasks in sched.h  */
+// Buffer size constant
 #define BUFFER_SIZE 512
-static int deviceRegterdStatus;
-static struct task_struct *tempProcess;
 
-// The prototype functions for the character driver -- must come before the struct definition
+// Stroes the device regsitration status
+static int device_reg_status;
+
+static struct task_struct *temp_process;
+static char *result_buffer;
+
+/* Function declaration for character device open() file-operation */
 static int device_open(struct inode *, struct file *);
+/* Function declaration for character device read() file-operation */
 static ssize_t device_read(struct file *, char __user *, size_t, loff_t *);
+/* Function declaration for character device close() file-operation */
 static int device_close(struct inode *, struct file *);
+
+/* Function declaration to get the status based on the value of type long from process->status */
 static char *getProcessStatus(long);
 
+/* Struct of file-operations for defining the character device */
 static struct file_operations fops = {
     .owner = THIS_MODULE,
     .open = device_open,
     .read = device_read,
     .release = device_close};
 
+/* Struct of miscdevice -  character device */
 static struct miscdevice process_lst_device = {
     .minor = MISC_DYNAMIC_MINOR,
     .name = "process_lst",
     .fops = &fops};
 
+/* Function implementation for open() function of character device */
 static int device_open(struct inode *inodep, struct file *filep)
 {
-    printk(KERN_INFO "\nProcess_Lst_Device: Device has been opened.");
-    tempProcess = next_task(&init_task);
+    // Allocating memory for storing the process details
+    result_buffer = kmalloc(sizeof(char *) * BUFFER_SIZE, GFP_KERNEL);
+    printk(KERN_INFO "\nProcess_Lst_Device: %s", "Device has been opened.");
+
+    // Storing the process after the init_task process mentioned into a temporay storage
+    temp_process = next_task(&init_task);
     return 0;
 }
-static ssize_t device_read(struct file *file, char *userOutputBuffer, size_t length, loff_t *offset)
-{
-    int resBufferContentLen = 0;
-    struct task_struct *process;
-    printk(KERN_INFO "\nProcess_Lst_Device:  %s", "Reading the Process list device.");
 
+/* Function implementation for read() function of character device */
+static ssize_t device_read(struct file *file, char *user_space_buffer, size_t length, loff_t *offset)
+{
+    int result_buffr_content_len = 0;
+    int cpy_to_usr_status;
+    struct task_struct *process;
+    printk(KERN_INFO "\nProcess_Lst_Device: %s", "Reading the Process list device.");
+
+    // Iterating through each process or task
     for_each_process(process)
     {
-        if (process == tempProcess)
+        // Checking if the current process is pointing to the correct process stored tempProcess using next_task()
+        if (process == temp_process)
         {
-            char *resultBuffer = kmalloc(sizeof(char *) * BUFFER_SIZE, GFP_KERNEL);
-            int cpyToUsrStatus;
-            sprintf(resultBuffer, "PROCESS = %s | PID = %d | PPID = %d | CPU = %d | STATE = %s",
+            // Intializng the buffer to 0 and writing the process details to the buffer
+            memset(result_buffer, 0, sizeof(char *) * BUFFER_SIZE);
+            sprintf(result_buffer, "PROCESS = %s | PID = %d | PPID = %d | CPU = %d | STATE = %s",
                     process->comm, process->pid, process->real_parent->pid, task_cpu(process), getProcessStatus(process->state));
-            printk(KERN_INFO "\nProcess_Lst_Device:  Process read - %s", resultBuffer);
-            cpyToUsrStatus = copy_to_user(userOutputBuffer, resultBuffer, strlen(resultBuffer));
-            if (cpyToUsrStatus != 0)
-            {
-                printk(KERN_INFO "\nProcess_Lst_Device:  %s", "\nFailed to copy buffer contents from kernel to user.");
-                kfree(resultBuffer);
-                return -EFAULT;
-            }
+            printk(KERN_INFO "\nProcess_Lst_Device:  %s - %s", "Process read", result_buffer);
 
-            resBufferContentLen = strlen(resultBuffer);
-            kfree(resultBuffer);
-            tempProcess = next_task(process);
+            // Verifying whether the user space pointer is valid
+            if (access_ok(user_space_buffer, VERIFY_WRITE))
+            {
+                // If user space pointer is valid, then perfoming the copy_to_user
+                cpy_to_usr_status = copy_to_user(user_space_buffer, result_buffer, strlen(result_buffer));
+                if (cpy_to_usr_status != 0)
+                { // Failure to copy kernel buffer contents to user space buffer.
+                    printk(KERN_INFO "\nProcess_Lst_Device:  %s", "Failed to copy kernel buffer contents to user space buffer.");
+                    return -EFAULT;
+                }
+            }
+            else
+            {
+                printk(KERN_INFO "\nProcess_Lst_Device:  %s", "Failed to verify the user space.");
+                return -1;
+            }
+            result_buffr_content_len = strlen(result_buffer);
+            // Storing the next process into a temporay storage
+            temp_process = next_task(process);
             break;
         }
     }
-    return resBufferContentLen;
+    return result_buffr_content_len;
 }
+
+/* Function implementation for close() function of character device */
 static int device_close(struct inode *inodep, struct file *filep)
 {
-    printk(KERN_INFO "\nProcess_Lst_Device: Closing the device.");
-    tempProcess = &init_task;
+    printk(KERN_INFO "\nProcess_Lst_Device: %s", "Closing the device.");
+
+    // Storing the init_task process pointer into the temporay storage
+    temp_process = &init_task;
+
+    // De-allocatin the memory
+    kfree(result_buffer);
     return 0;
 }
 
 /* Defining the function that is called when module is installed */
 int __init init_module()
 {
-    deviceRegterdStatus = misc_register(&process_lst_device);
+    // Registering the character device
+    device_reg_status = misc_register(&process_lst_device);
 
-    if (deviceRegterdStatus < 0)
-    {
-        printk(KERN_ALERT "\nProcess_Lst_Device: Failed to register the device.\n");
-        return deviceRegterdStatus;
+    if (device_reg_status < 0)
+    { // Device registration failure block
+        printk(KERN_ALERT "\nProcess_Lst_Device: %s", "Failed to register the device.");
+        return device_reg_status;
     }
-    printk(KERN_INFO "\nProcess_Lst_Device: Registered device correctly.");
-    tempProcess = next_task(&init_task);
-
-    /*0 1 2 4 8 16 32 48 64 128 256 512 1024 2048 4096 258 260 264 1026 3 127
-    printk("\n%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d ", TASK_RUNNING, TASK_INTERRUPTIBLE, TASK_UNINTERRUPTIBLE,
-           __TASK_STOPPED, __TASK_TRACED, EXIT_DEAD, EXIT_ZOMBIE, EXIT_TRACE, TASK_PARKED, TASK_DEAD, TASK_WAKEKILL, TASK_WAKING,
-           TASK_NOLOAD, TASK_NEW, TASK_STATE_MAX, TASK_KILLABLE, TASK_STOPPED, TASK_TRACED, TASK_IDLE, TASK_NORMAL, TASK_REPORT);*/
+    printk(KERN_INFO "\nProcess_Lst_Device: %s", "Registered device correctly.");
 
     return 0;
 }
@@ -108,10 +140,12 @@ int __init init_module()
 /* Defining the function that is called when module is un-installed */
 void __exit cleanup_module()
 {
+    // De-registering the character device
     misc_deregister(&process_lst_device);
     printk(KERN_INFO "\nProcess_Lst_Device: %s", "De-registering the device.");
 }
 
+/* Function implementation to get the status based on the value of type long */
 static char *getProcessStatus(long processState)
 {
     switch (processState)
@@ -178,7 +212,7 @@ static char *getProcessStatus(long processState)
         return "TASK_INTERRUPTIBLE, TASK_UNINTERRUPTIBLE";
         //127
     case TASK_REPORT:
-        return "TASK_RUNNING, TASK_INTERRUPTIBLE, TASK_UNINTERRUPTIBLE, __TASK_STOPPED,  __TASK_TRACED, EXIT_DEAD, EXIT_ZOMBIE, TASK_PARKED";
+        return "TASK_RUNNING, TASK_INTERRUPTIBLE, TASK_UNINTERRUPTIBLE, __TASK_STOPPED, __TASK_TRACED, EXIT_DEAD, EXIT_ZOMBIE, TASK_PARKED";
     default:
         return "INVALID";
     }

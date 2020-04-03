@@ -7,17 +7,18 @@
 
 #define BUFFER_LENGTH 256
 #define PROCESS_ARR_LENGTH 256
-char *outputString;
+char *output_string;
 
 int main()
 {
-    int readingFileStatus = 1, fileDescriptor, processCount = 1;
+    int bytes_read = 1, file_descriptor, process_count = 1;
+    output_string = malloc(sizeof(char *) * BUFFER_LENGTH);
 
     printf("\nUser Program: Starting the user program to test the device.\n");
 
-    fileDescriptor = open("/dev/process_lst", O_RDWR);
+    file_descriptor = open("/dev/process_lst", O_RDWR);
 
-    if (fileDescriptor < 0)
+    if (file_descriptor < 0)
     {
         perror("\nUser Program: Failed to open the device.\n");
         return errno;
@@ -25,22 +26,25 @@ int main()
 
     printf("\nUser Program: Reading from the device.\n");
     printf("\n===============================================================================================================\n");
-    while (readingFileStatus != 0)
+    while (bytes_read != 0)
     {
-        outputString = malloc(sizeof(char *) * BUFFER_LENGTH);
-        readingFileStatus = read(fileDescriptor, outputString, (sizeof(char *) * BUFFER_LENGTH));
-        if (readingFileStatus < 0)
+        memset(output_string, 0, sizeof(char *) * BUFFER_LENGTH);
+        bytes_read = read(file_descriptor, output_string, (sizeof(char *) * BUFFER_LENGTH));
+        if (bytes_read < 0)
         {
-            perror("\nUser Program: Failed to read the message from the device.");
+            perror("\nUser Program: Failed to read the message from the device.\n");
+            free(output_string);
             return errno;
         }
-        if (readingFileStatus != 0)
-            printf("\nUser Program: %s", outputString);
-        free(outputString);
+        if (bytes_read != 0) {
+            printf("\nUser Program: %s\n", output_string);
+            printf("\nUser Program: Bytes Read - %d\n", bytes_read);
+        }
+
     }
     printf("\n===============================================================================================================\n");
-
-    close(fileDescriptor);
+    free(output_string);
+    close(file_descriptor);
 
     printf("\nUser Program: End of the program\n");
     return 0;
