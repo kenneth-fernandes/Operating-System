@@ -23,32 +23,59 @@
 
 - As of now, I plan to complete the assignment by the given due date : 03/27/2020
 
-# Execution of the plan (as on 04/03/2020):
-- I
+# Execution (as on 04/03/2020):
+- The first job I did is understanding the kernel module and how the it is installed and used by any user program.
+
+- Started off by writing a simple code to just run the driver.
+
+- Once I understood of how the device driver works, my next task was to create the structure of my device driver and the file operation functions.
+
+- But due to certain "challenges" that I faced, it lead to delay in submission.
+
+- Apologies for the delay.
+
 # Challenges faced:
-- The reason for delaying the assignment is by my computer system crashed, which is right now with the service center.
+- The reason for delaying the assignment is by my computer system crashed, which is right now with the service center. Luckily, after couple of days, I was able to work on my friends spare laptop.
+
 - As the code written was on my local system, I had to write the program again as I had not uploaded to the online repository.
+
 - Also, I was facing challenges with segmentation fault occuring at the kernel leading to restarting my system.
 
+- Due to incorrect kernel memory allocation, the device driver was in use and only way was to restart the system.
+
+- Once I resloved this issue, it was too late for me to submit the program. 
+
+- Also, multiple submissions were around the earlier deadline which lead to the delay as I had to set up the computer system in order to work on all my assignments.
 
 # Compling the program:
 - To compile the dev_ps.c kernel module code
- > make 
+ > sudo make 
 
 - To insert the module to kernel
  > sudo insmod dev_ps.ko 
 
 - To build the user program user.c
- > make build
+ > sudo make build
 
 # Executing the program:
-- make run
+ > sudo make run
 
 # Cleaning the executable:
 - To clean all executables
- > make clean
+ > sudo make clean
 
 - To degregister the kernel module
  > sudo rmmod dev_ps
+
+# Functionalities:
+- User space program for a single file descriptor [IMPLEMENTED].
+- User space program for a multiple file descriptor [NOT-IMPLEMENTED].
+
+# Declaration:
+- The program has been tested and works fine on csvb machine.
+
+- There was issue with the access_ok() function on my local machine and it does not compile.
+
+- Also, the access_ok(VERIFY_WRITE, user_space_buffer, length) works fine on csvb machine but not on my local machine as the arguments it takes 2 rather than 3.
 
 # Date: 04/03/2020
