@@ -20,7 +20,7 @@ modules_install:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules_install
 
 clean:
-	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions Module.symvers modules.order program
+	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions Module.symvers modules.order user_program
 
 .PHONY: modules modules_install clean
 
@@ -30,9 +30,9 @@ else
 	obj-m := dev_ps.o
 endif
 
-run : program
-	./program
+run : user_program
+	./user_program
 	
 build : user.c
-	gcc user.c -o program
+	gcc user.c -o user_program
 

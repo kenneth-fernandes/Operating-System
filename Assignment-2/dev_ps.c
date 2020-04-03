@@ -84,7 +84,7 @@ static ssize_t device_read(struct file *file, char *user_space_buffer, size_t le
             printk(KERN_INFO "\nProcess_Lst_Device:  %s - %s", "Process read", result_buffer);
 
             // Verifying whether the user space pointer is valid
-            if (access_ok(user_space_buffer, VERIFY_WRITE))
+            if (access_ok(VERIFY_WRITE, user_space_buffer, strlen(user_space_buffer)))
             {
                 // If user space pointer is valid, then perfoming the copy_to_user
                 cpy_to_usr_status = copy_to_user(user_space_buffer, result_buffer, strlen(result_buffer));

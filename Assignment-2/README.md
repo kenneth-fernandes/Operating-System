@@ -23,13 +23,32 @@
 
 - As of now, I plan to complete the assignment by the given due date : 03/27/2020
 
+# Execution of the plan (as on 04/03/2020):
+- I
+# Challenges faced:
+- The reason for delaying the assignment is by my computer system crashed, which is right now with the service center.
+- As the code written was on my local system, I had to write the program again as I had not uploaded to the online repository.
+- Also, I was facing challenges with segmentation fault occuring at the kernel leading to restarting my system.
+
+
 # Compling the program:
-- (Need to work on the program)
+- To compile the dev_ps.c kernel module code
+ > make 
+
+- To insert the module to kernel
+ > sudo insmod dev_ps.ko 
+
+- To build the user program user.c
+ > make build
 
 # Executing the program:
-- (Need to work on the program)
+- make run
 
 # Cleaning the executable:
-- make clean
+- To clean all executables
+ > make clean
 
-# Date: 03/16/2020
+- To degregister the kernel module
+ > sudo rmmod dev_ps
+
+# Date: 04/03/2020
