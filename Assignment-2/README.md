@@ -8,6 +8,10 @@
 # Description:
 - To implement Character Device Driver to list processes using Kernel programming.
 
+- User space program for a single file descriptor [IMPLEMENTED].
+
+- User space program for a multiple file descriptor [NOT-IMPLEMENTED].
+
 # Plan of action (as on 03/16/2020):
 - Currently, I am looking at various online resources that would help me understand kernel programming.
 
@@ -23,7 +27,7 @@
 
 - As of now, I plan to complete the assignment by the given due date : 03/27/2020
 
-# Execution (as on 04/03/2020):
+# Execution of plan (as on 04/03/2020):
 - The first job I did is understanding the kernel module and how the it is installed and used by any user program.
 
 - Started off by writing a simple code to just run the driver.
@@ -33,6 +37,18 @@
 - But due to certain "challenges" that I faced, it lead to delay in submission.
 
 - Apologies for the delay.
+
+# Implementation (Working of program):
+- The dev_ps program has open(), read() and close() file-operations functions.
+
+- The read() function of the dev_ps program appears to loop through the process but I actually read it one at a time but storing the next process in a temporary storage using the next_task(process) macro.
+
+- Earlier I had created a char** pointer variable to store all the process details, but it might take more space so I implemented using a char* pointer variable buffer.
+
+- So with each read from my user program, each process details with the number of bytes read is sent and printed on the kernel and user space console.
+
+- Once there are no processes remaining, the read function sends the number of bytes read as zero which terminates the user program.
+
 
 # Challenges faced:
 - The reason for delaying the assignment is by my computer system crashed, which is right now with the service center. Luckily, after couple of days, I was able to work on my friends spare laptop.
@@ -66,10 +82,6 @@
 
 - To degregister the kernel module
  > sudo rmmod dev_ps
-
-# Functionalities:
-- User space program for a single file descriptor [IMPLEMENTED].
-- User space program for a multiple file descriptor [NOT-IMPLEMENTED].
 
 # Declaration:
 - The program has been tested and works fine on csvb machine.
