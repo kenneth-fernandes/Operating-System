@@ -2,10 +2,16 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/kprobes.h>
+#include <linux/time.h>
 
 #define MAX_SYMBOL_LEN 64
 static char symbol[MAX_SYMBOL_LEN] = "__handle_mm_fault";
 static int u_pid = 0;
+static int time_count = 0;
+static int addr_count = 0;
+static ktime_t *ktime_ptr;
+static ktime_t *plot_time_ptr;
+static unsigned long int *addr_ptr;
 
 module_param_string(symbol, symbol, sizeof(symbol), S_IRUGO);
 module_param(u_pid, int, S_IRUGO);
@@ -21,12 +27,21 @@ static int handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
 // Code for finding out process page fault address for X86
 #ifdef CONFIG_X86
-    //pr_info("inside pre-handler %d",current->pid);
     if (current->pid == u_pid)
     {
-        pr_info("<%s> Pre_handler- Process: %s | Pid: %d | Fault-Address: %lu",
-                p->symbol_name, current->comm, current->pid, regs->si);
+        if (time_count < 70)
+        {
+            ktime_ptr[time_count] = ktime_get();
+            plot_time_ptr[time_count] = ktime_ptr[time_count] - ktime_ptr[0];
+            time_count += 1;
+        }
+        if (addr_count < 30)
+        {
+            addr_ptr[addr_count] = regs->si;
+            addr_count+=1;
+        }
     }
+
 #endif
 
     return 0;
@@ -47,6 +62,11 @@ static int __init kprobe_init(void)
         return ret;
     }
     pr_info("Planted kprobe at %p\n", kp.addr);
+
+    ktime_ptr = kmalloc(sizeof(ktime_t *) * 70, GFP_KERNEL);
+    plot_time_ptr = kmalloc(sizeof(ktime_t *) * 70, GFP_KERNEL);
+    addr_ptr = kmalloc(sizeof(unsigned long int *) * 30, GFP_KERNEL);
+
     return 0;
 }
 
@@ -55,6 +75,22 @@ static int __init kprobe_init(void)
 */
 static void __exit kprobe_exit(void)
 {
+    int i;
+    for (i = 0; i < time_count; i += 1)
+    {
+        pr_info("%d %llu %llu", i, ktime_ptr[i], plot_time_ptr[i]);
+    }
+    time_count = 0;
+    for (i = 0; i < addr_count; i += 1)
+    {
+        pr_info("%d %lu", i, addr_ptr[i]);
+    }
+    addr_count = 0;
+
+    kfree(ktime_ptr);
+    kfree(plot_time_ptr);
+    kfree(addr_ptr);
+
     unregister_kprobe(&kp);
     pr_info("kprobe at %p unregistered\n", kp.addr);
 }
