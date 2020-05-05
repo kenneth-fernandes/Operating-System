@@ -9,9 +9,15 @@ sudo rmmod kprobes_b
 dmesg | tail -90
 '
 
-
-sudo insmod kprobes_b.ko u_pid=5444
+: '
+sudo insmod kprobes_b.ko u_pid=4577
 wait $pid
 sudo rmmod kprobes_b
 dmesg | tail -90
+'
+
+pid=` pgrep sysbench | head -n 1`
+sudo insmod kprobes_b.ko u_pid=$pid
+wait $pid
+sudo rmmod kprobes_b
 
