@@ -84,7 +84,7 @@ static void print_address_time_plotting(void)
 {
     int i, j;
     printk(KERN_INFO "\n");
-    printk(KERN_INFO "\n=================== SCATTER PLOT (MEMORY ADDRESS V/S TIME) ========================\n");
+    printk(KERN_INFO "\n=================== SCATTER PLOT (MEMORY ADDRESS V/S TIME) ========================\n\n");
     // Code for printing the Address labels for plotting table
     printk(KERN_CONT "| Addr |");
     for (i = 0; i < addr_count; i += 1)
@@ -146,7 +146,7 @@ static void print_fault_address_to_address_label_mapping(void)
 {
     int i;
     printk(KERN_INFO "\n");
-    printk(KERN_INFO "\n=================== ADDRESS LABEL TO PAGE FAULT VIRTUAL ADDRESS MAPPING TABLE ========================\n");
+    printk(KERN_INFO "\n=================== ADDRESS LABEL TO PAGE FAULT VIRTUAL ADDRESS MAPPING TABLE ========================\n\n");
     printk(KERN_INFO "|\t%s\t|\t\t%s\t\t|\t\t%s\t|\t%s\t|", "FAULT ADDRESS LABEL", "FAULT ADDRESS", "KERNEL TIME (ns)", "KERNEL TIME SCALLED (ns)");
     for (i = 0; i < addr_count; i += 1)
     {
@@ -169,7 +169,7 @@ static void print_time_to_time_label_mapping(void)
 {
     int i;
     printk(KERN_INFO "\n");
-    printk(KERN_INFO "\n=================== KERNEL TIME LABEL TO KERNEL SAMPLE TIME TABLE ========================\n");
+    printk(KERN_INFO "\n=================== KERNEL TIME LABEL TO KERNEL SAMPLE TIME TABLE ========================\n\n");
     printk(KERN_INFO "|\t%s\t|\t\t%s\t|", "KERNEL TIME LABEL", "KERNEL TIME (ns)");
     for (i = 0; i < MAX_TIME_COUNT; i += 1)
     {
