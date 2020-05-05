@@ -39,25 +39,22 @@ static int handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
 // Code for finding out process page fault address for X86
 #ifdef CONFIG_X86
-    if (addr_count < MAX_ADDRESS_COUNT)
-    {
-        struct task_struct *process;
-        for_each_process(process)
-        {
-            // printk("%d %d", current->pid, u_pid);
-            if (process->pid == u_pid)
-            {
 
-                ktime_ptr[addr_count] = ktime_get();
-                addr_ptr[addr_count] = regs->si;
-                addr_count += 1;
-            }
+    // printk("%d %d", current->pid, u_pid);
+    if (current->pid == u_pid)
+    {
+        if (addr_count < MAX_ADDRESS_COUNT)
+        {
+
+            ktime_ptr[addr_count] = ktime_get();
+            addr_ptr[addr_count] = regs->si;
+            addr_count += 1;
         }
     }
-}
+
 #endif
 
-return 0;
+    return 0;
 }
 
 static void set_time_scalaing_parameters(void)
@@ -138,18 +135,18 @@ static void print_fault_address_to_address_label_mapping(void)
 {
     int i;
     printk(KERN_INFO "\n");
-    printk(KERN_INFO "|\t%s\t|\t\t%s\t\t|\t\t%s\t|", "FAULT ADDRESS LABEL", "FAULT ADDRESS", "KERNEL TIME (ns)");
+    printk(KERN_INFO "|\t%s\t|\t\t%s\t\t|\t\t%s\t|\t%s\t|", "FAULT ADDRESS LABEL", "FAULT ADDRESS", "KERNEL TIME (ns)", "KERNEL TIME SCALLED (ns)");
     for (i = 0; i < addr_count; i += 1)
     {
         printk(KERN_CONT "\n");
         ktime_t ktime = ktime_ptr[i] - ktime_ptr[0];
         if (i < 10)
         {
-            printk(KERN_CONT "|\t\t0%d\t\t|\t\t%lu\t\t|\t\t%lld\t\t|", i, addr_ptr[i], ktime_to_ns(ktime_ptr[i]));
+            printk(KERN_CONT "|\t\t0%d\t\t|\t\t%lu\t\t|\t\t%lld\t\t|\t\t%lld\t\t\t|", i, addr_ptr[i], ktime_to_ns(ktime_ptr[i]), ktime_to_ns(ktime_ptr[i] - ktime_ptr[0]));
         }
         else
         {
-            printk(KERN_CONT "|\t\t%d\t\t|\t\t%lu\t\t|\t\t%lld\t\t|", i, addr_ptr[i], ktime_to_ns(ktime_ptr[i]));
+            printk(KERN_CONT "|\t\t%d\t\t|\t\t%lu\t\t|\t\t%lld\t\t|\t\t%lld\t\t\t|", i, addr_ptr[i], ktime_to_ns(ktime_ptr[i]), ktime_to_ns(ktime_ptr[i] - ktime_ptr[0]));
         }
     }
 }
