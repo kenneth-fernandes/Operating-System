@@ -27,6 +27,6 @@ clean:
 else
 	# called from kernel build system: just declare what our modules are
 	#obj-m := hello.o hellon.o 
-	obj-m := kprobes_a.o kprobes_b.o
+	obj-m := pf_probe_A.o pf_probe_B.o
 	
 endif

@@ -18,7 +18,7 @@ sudo rmmod kprobes_b
 dmesg | tail -200
 '
 
-pid=`pgrep sysbench | head -n 1`
+pid=`pgrep iperf3 | head -n 1`
 sudo insmod kprobes_b.ko u_pid=$pid
 
 
