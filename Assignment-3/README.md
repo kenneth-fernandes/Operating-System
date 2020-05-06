@@ -18,9 +18,6 @@
  > sudo insmod pf_probe_A.ko u_pid=<Process_ID>
  > sudo insmod pf_probe_B.ko u_pid=<Process_ID>
 
-# Executing the program:
- > sudo make run
-
 # De-registering:
 - To degregister the kernel module
  > sudo rmmod pf_probe_A
