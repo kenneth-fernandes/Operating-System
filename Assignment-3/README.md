@@ -15,7 +15,7 @@
  > sudo make 
 
 - To insert the modules to kernel
- > sudo insmod pf_probe_A.ko 
+ > sudo insmod pf_probe_A.ko u_pid=<Process_ID>
  > sudo insmod pf_probe_B.ko u_pid=<Process_ID>
 
 # Executing the program:
