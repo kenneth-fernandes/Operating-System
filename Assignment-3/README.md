@@ -12,18 +12,18 @@
 
 # Compling the program:
 - To compile the dev_ps.c kernel module code
- > sudo make 
+    - sudo make 
 
 - To insert the modules to kernel
- > sudo insmod pf_probe_A.ko u_pid=<Process_ID>
- > sudo insmod pf_probe_B.ko u_pid=<Process_ID>
+    - sudo insmod pf_probe_A.ko u_pid=<Process_ID>
+    - sudo insmod pf_probe_B.ko u_pid=<Process_ID>
 
 # De-registering:
 - To degregister the kernel module
- > sudo rmmod pf_probe_A
- > sudo rmmod pf_probe_B
+    - sudo rmmod pf_probe_A
+    - sudo rmmod pf_probe_B
 
 # View Output:
-> dmesg | tail -300
+- dmesg | tail -300
 
 # Date: 04/03/2020
