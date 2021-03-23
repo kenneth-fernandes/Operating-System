@@ -1,9 +1,7 @@
 # Operating System - Assignment 1
 
-# Name:
-- Kenneth Peter Fernandes
-- <kferna11@binghamton.edu>
-- B00813852
+# Name:Kenneth Peter Fernandes
+
 
 # Description:
 - The program basically works as a basic shell of UNIX which is written in C.
