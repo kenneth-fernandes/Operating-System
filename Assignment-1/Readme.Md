@@ -1,6 +1,6 @@
 # Operating System - Assignment 1
 
-# Name:Kenneth Peter Fernandes
+# Name: Kenneth Peter Fernandes
 
 
 # Description:
