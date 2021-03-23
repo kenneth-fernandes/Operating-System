@@ -1,9 +1,6 @@
 # Operating System - Assignment 2
 
-# Name:
-- Kenneth Peter Fernandes
-- <kferna11@binghamton.edu>
-- B00813852
+# Name: Kenneth Peter Fernandes
 
 # Description:
 - To implement kernel Kprobe mechanism for :
