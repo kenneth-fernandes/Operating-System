@@ -4,5 +4,5 @@
 
 
 # Description:
-- This repositories contain assignments written in C language for Operating System course CS-542
+- This repository contain assignments written in C language for Operating System course CS-542
 
